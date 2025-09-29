@@ -248,3 +248,26 @@ export function closeAllPopups() {
     map.closePopup();
   }
 }
+
+/**
+ * Сбрасывает карту в исходное состояние
+ */
+export function resetMap() {
+  if (!map || !mainPinMarker) {
+    return;
+  }
+
+  // Возвращаем главную метку в исходное положение
+  const originalPosition = [
+    TOKYO_CENTER.lat + MAIN_PIN_OFFSET.lat,
+    TOKYO_CENTER.lng + MAIN_PIN_OFFSET.lng
+  ];
+
+  setMainPinCoordinates(originalPosition);
+
+  // Очищаем все метки объявлений
+  clearAdvertisementPins();
+
+  // Возвращаем карту в исходное состояние
+  map.setView(TOKYO_CENTER, MAP_CONFIG.zoom);
+}

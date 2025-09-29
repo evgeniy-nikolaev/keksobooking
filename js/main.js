@@ -10,7 +10,13 @@ import { generateAdvertisement, generateAdvertisements, advertisements } from '.
 import { initForm, getFormData, resetForm, validateForm } from './form.js';
 
 // Импортируем модуль для работы с картой
-import { initMap, addAdvertisementPins } from './map.js';
+import { initMap, addAdvertisementPins, resetMap } from './map.js';
+
+// Импортируем модуль для работы с сервером
+import { loadAdvertisements, sendFormData } from './server.js';
+
+// Импортируем модуль для уведомлений
+import { showSuccessMessage, showErrorMessage, showLoadError } from './notifications.js';
 
 // Импортируем модули для будущих функций
 // import { filterModule } from './filter.js';
@@ -24,19 +30,24 @@ function setupFormHandlers() {
 
   if (form) {
     // Обработчик отправки формы
-    form.addEventListener('submit', (evt) => {
+    form.addEventListener('submit', async (evt) => {
       evt.preventDefault();
 
       if (validateForm()) {
-        const formData = getFormData();
-        // Здесь будет логика отправки данных
-        // eslint-disable-next-line no-console
-        console.log('Данные формы:', formData);
-        // eslint-disable-next-line no-alert
-        alert('Форма отправлена! (Данные в консоли)');
+        try {
+          const formData = getFormData();
+          await sendFormData(formData);
+
+          // Успешная отправка
+          showSuccessMessage();
+          resetFormToInitialState();
+        } catch (error) {
+          // Ошибка отправки
+          showErrorMessage('Ошибка при отправке формы. Попробуйте еще раз.');
+          console.error('Ошибка отправки формы:', error);
+        }
       } else {
-        // eslint-disable-next-line no-alert
-        alert('Пожалуйста, исправьте ошибки в форме');
+        showErrorMessage('Пожалуйста, исправьте ошибки в форме');
       }
     });
   }
@@ -45,7 +56,7 @@ function setupFormHandlers() {
     // Обработчик сброса формы
     resetButton.addEventListener('click', (evt) => {
       evt.preventDefault();
-      resetForm();
+      resetFormToInitialState();
     });
   }
 
@@ -54,13 +65,40 @@ function setupFormHandlers() {
 }
 
 /**
+ * Сброс формы в исходное состояние
+ */
+function resetFormToInitialState() {
+  // Сбрасываем форму
+  resetForm();
+
+  // Сбрасываем карту в исходное положение
+  resetMap();
+
+  // Здесь можно добавить сброс фильтров
+  // filterModule.reset();
+}
+
+/**
+ * Загрузка данных с сервера
+ */
+async function loadServerData() {
+  try {
+    const serverAdvertisements = await loadAdvertisements();
+    console.log('Данные загружены с сервера:', serverAdvertisements.length, 'объявлений');
+    return serverAdvertisements;
+  } catch (error) {
+    console.error('Ошибка загрузки данных с сервера:', error);
+    showLoadError('Не удалось загрузить данные с сервера. Используются локальные данные.');
+    return advertisements; // Используем локальные данные как fallback
+  }
+}
+
+/**
  * Инициализация приложения
  */
-function initApp() {
+async function initApp() {
   // eslint-disable-next-line no-console
   console.log('Приложение Кексобукинг инициализировано');
-  // eslint-disable-next-line no-console
-  console.log('Доступные объявления:', advertisements.length);
 
   // Инициализируем карту
   initMap();
@@ -71,12 +109,14 @@ function initApp() {
   // Добавляем обработчики для кнопок формы
   setupFormHandlers();
 
-  // Добавляем метки объявлений на карту
-  addAdvertisementPins(advertisements);
+  // Загружаем данные с сервера
+  const advertisementsData = await loadServerData();
 
-  // Здесь будет код для инициализации карты и фильтров
-  // mapModule.init(advertisements);
-  // filterModule.init();
+  // Добавляем метки объявлений на карту
+  addAdvertisementPins(advertisementsData);
+
+  // Здесь будет код для инициализации фильтров
+  // filterModule.init(advertisementsData);
 }
 
 // Запускаем приложение после загрузки DOM
