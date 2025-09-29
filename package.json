@@ -12,13 +12,15 @@
   },
   "devDependencies": {
     "browser-sync": "2.26.14",
-    "eslint": "7.18.0",
-    "eslint-config-htmlacademy": "2.0.0"
+    "eslint": "^8.0.0",
+    "eslint-config-htmlacademy": "^9.0.0"
   },
   "license": "MIT",
   "dependencies": {},
   "scripts": {
     "start": "browser-sync start --server --no-ui --files \"js/**/*.js\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "test": "eslint js/"
   },
   "engines": {

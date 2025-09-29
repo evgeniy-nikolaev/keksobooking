@@ -1026,3 +1026,122 @@ fieldset {
 .hidden {
   display: none;
 }
+
+/* Стили для неактивного состояния страницы */
+.page--inactive .ad-form {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.page--inactive .map__filters-container {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.page--inactive .ad-form input,
+.page--inactive .ad-form select,
+.page--inactive .ad-form textarea,
+.page--inactive .ad-form button {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.page--inactive .map__filters input,
+.page--inactive .map__filters select {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Стили для попапов карты */
+.map__popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  padding: 0;
+}
+
+.map__popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+}
+
+.map__popup .popup {
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  padding: 20px;
+  min-width: 300px;
+}
+
+.map__popup .popup__avatar {
+  float: left;
+  margin-right: 15px;
+  margin-bottom: 10px;
+}
+
+.map__popup .popup__title {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.map__popup .popup__text {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.map__popup .popup__type {
+  margin: 10px 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.map__popup .popup__features {
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.map__popup .popup__feature {
+  background: #e0e0e0;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+.map__popup .popup__description {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.map__popup .popup__photos {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.map__popup .popup__photo {
+  border-radius: 4px;
+}
+
+/* Стили для ошибок валидации */
+.ad-form__element--error input,
+.ad-form__element--error select,
+.ad-form__element--error textarea {
+  border-color: #ff5635;
+  box-shadow: 0 0 0 2px rgba(255, 86, 53, 0.2);
+}
+
+.ad-form__error {
+  color: #ff5635;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.ad-form__element--error .ad-form__label {
+  color: #ff5635;
+}
