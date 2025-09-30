@@ -1145,3 +1145,44 @@ fieldset {
 .ad-form__element--error .ad-form__label {
   color: #ff5635;
 }
+
+/* Стили для drag & drop загрузки файлов */
+.ad-form-header__drop-zone,
+.ad-form__drop-zone {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.ad-form-header__drop-zone:hover,
+.ad-form__drop-zone:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ad-form-header__drop-zone.drag-over,
+.ad-form__drop-zone.drag-over {
+  background-color: rgba(0, 123, 255, 0.1);
+  border-color: #007bff;
+  transform: scale(1.02);
+}
+
+/* Стили для кнопки удаления */
+.remove-button {
+  transition: all 0.2s ease;
+}
+
+.remove-button:hover {
+  background-color: rgba(255, 0, 0, 1) !important;
+  transform: scale(1.1);
+}
+
+/* Стили для предварительного просмотра изображений */
+.ad-form-header__preview img,
+.ad-form__photo img {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.ad-form-header__preview img:hover,
+.ad-form__photo img:hover {
+  transform: scale(1.02);
+}

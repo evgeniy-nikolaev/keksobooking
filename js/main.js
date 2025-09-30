@@ -21,6 +21,9 @@ import { showSuccessMessage, showErrorMessage, showLoadError } from './notificat
 // Импортируем модуль фильтрации
 import { initFilter, deactivateFilters } from './filter.js';
 
+// Импортируем модуль загрузки файлов
+import { initFileUpload, resetFileUploads } from './file-upload.js';
+
 /**
  * Настройка обработчиков формы
  */
@@ -38,8 +41,10 @@ function setupFormHandlers() {
           const formData = getFormData();
 
           // Отладочная информация
+          // eslint-disable-next-line no-console
           console.log('Отправляем данные формы:');
           for (const [key, value] of formData.entries()) {
+            // eslint-disable-next-line no-console
             console.log(`${key}:`, value);
           }
 
@@ -50,6 +55,7 @@ function setupFormHandlers() {
           resetFormToInitialState();
         } catch (error) {
           // Ошибка отправки
+          // eslint-disable-next-line no-console
           console.error('Детали ошибки отправки:', error);
           showErrorMessage(`Ошибка при отправке формы: ${error.message}`);
         }
@@ -83,6 +89,9 @@ function resetFormToInitialState() {
 
   // Деактивируем фильтры
   deactivateFilters();
+
+  // Сбрасываем загруженные файлы
+  resetFileUploads();
 }
 
 /**
@@ -97,9 +106,11 @@ async function loadServerData() {
     }
 
     const serverAdvertisements = await loadAdvertisements();
+    // eslint-disable-next-line no-console
     console.log('Данные загружены с сервера:', serverAdvertisements.length, 'объявлений');
     return serverAdvertisements;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Ошибка загрузки данных с сервера:', error);
     showLoadError('Не удалось загрузить данные с сервера. Используются локальные данные.');
     return advertisements; // Используем локальные данные как fallback
@@ -110,12 +121,12 @@ async function loadServerData() {
  * Обновляет метки на карте
  * @param {Array} advertisements - Массив объявлений для отображения
  */
-function updateMapPins(advertisements) {
+function updateMapPins(ads) {
   // Очищаем существующие метки
   clearAdvertisementPins();
 
   // Добавляем новые метки
-  addAdvertisementPins(advertisements);
+  addAdvertisementPins(ads);
 }
 
 /**
@@ -130,6 +141,9 @@ async function initApp() {
 
   // Инициализируем модуль формы
   initForm();
+
+  // Инициализируем модуль загрузки файлов
+  initFileUpload();
 
   // Добавляем обработчики для кнопок формы
   setupFormHandlers();
