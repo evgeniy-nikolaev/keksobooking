@@ -8,6 +8,9 @@ const MAX_PINS_COUNT = 10;
 // Текущие отфильтрованные объявления
 let filteredAdvertisements = [];
 
+// Таймер для debounce
+let debounceTimer = null;
+
 /**
  * Инициализация модуля фильтрации
  * @param {Array} advertisements - Массив объявлений
@@ -26,20 +29,54 @@ export function initFilter(advertisements, onFilterChange) {
   // Активируем форму фильтров
   activateFilterForm();
 
-  // Добавляем обработчики событий
+  // Добавляем обработчики событий с debounce
   filterForm.addEventListener('change', () => {
-    applyFilters(advertisements, onFilterChange);
+    debouncedApplyFilters(advertisements, onFilterChange);
   });
 
   // Добавляем обработчик сброса
   const resetButton = document.querySelector('.ad-form__reset');
   if (resetButton) {
     resetButton.addEventListener('click', () => {
-      resetFilters(advertisements, onFilterChange);
+      debouncedResetFilters(advertisements, onFilterChange);
     });
   }
 
   console.log('Модуль фильтрации инициализирован');
+}
+
+/**
+ * Применяет фильтры с задержкой (debounce)
+ * @param {Array} advertisements - Исходный массив объявлений
+ * @param {Function} onFilterChange - Callback для обновления меток
+ */
+function debouncedApplyFilters(advertisements, onFilterChange) {
+  // Очищаем предыдущий таймер
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
+
+  // Устанавливаем новый таймер на 500мс
+  debounceTimer = setTimeout(() => {
+    applyFilters(advertisements, onFilterChange);
+  }, 500);
+}
+
+/**
+ * Сбрасывает фильтры с задержкой (debounce)
+ * @param {Array} advertisements - Исходный массив объявлений
+ * @param {Function} onFilterChange - Callback для обновления меток
+ */
+function debouncedResetFilters(advertisements, onFilterChange) {
+  // Очищаем предыдущий таймер
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
+
+  // Устанавливаем новый таймер на 500мс
+  debounceTimer = setTimeout(() => {
+    resetFilters(advertisements, onFilterChange);
+  }, 500);
 }
 
 /**
