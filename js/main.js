@@ -10,16 +10,16 @@ import { generateAdvertisement, generateAdvertisements, advertisements } from '.
 import { initForm, getFormData, resetForm, validateForm } from './form.js';
 
 // Импортируем модуль для работы с картой
-import { initMap, addAdvertisementPins, resetMap } from './map.js';
+import { initMap, addAdvertisementPins, resetMap, clearAdvertisementPins } from './map.js';
 
 // Импортируем модуль для работы с сервером
-import { loadAdvertisements, sendFormData } from './server.js';
+import { loadAdvertisements, sendFormData, testServerConnection } from './server.js';
 
 // Импортируем модуль для уведомлений
 import { showSuccessMessage, showErrorMessage, showLoadError } from './notifications.js';
 
-// Импортируем модули для будущих функций
-// import { filterModule } from './filter.js';
+// Импортируем модуль фильтрации
+import { initFilter, deactivateFilters } from './filter.js';
 
 /**
  * Настройка обработчиков формы
@@ -36,6 +36,13 @@ function setupFormHandlers() {
       if (validateForm()) {
         try {
           const formData = getFormData();
+
+          // Отладочная информация
+          console.log('Отправляем данные формы:');
+          for (const [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+          }
+
           await sendFormData(formData);
 
           // Успешная отправка
@@ -43,8 +50,8 @@ function setupFormHandlers() {
           resetFormToInitialState();
         } catch (error) {
           // Ошибка отправки
-          showErrorMessage('Ошибка при отправке формы. Попробуйте еще раз.');
-          console.error('Ошибка отправки формы:', error);
+          console.error('Детали ошибки отправки:', error);
+          showErrorMessage(`Ошибка при отправке формы: ${error.message}`);
         }
       } else {
         showErrorMessage('Пожалуйста, исправьте ошибки в форме');
@@ -74,8 +81,8 @@ function resetFormToInitialState() {
   // Сбрасываем карту в исходное положение
   resetMap();
 
-  // Здесь можно добавить сброс фильтров
-  // filterModule.reset();
+  // Деактивируем фильтры
+  deactivateFilters();
 }
 
 /**
@@ -83,6 +90,12 @@ function resetFormToInitialState() {
  */
 async function loadServerData() {
   try {
+    // Сначала проверяем доступность сервера
+    const serverAvailable = await testServerConnection();
+    if (!serverAvailable) {
+      throw new Error('Сервер недоступен');
+    }
+
     const serverAdvertisements = await loadAdvertisements();
     console.log('Данные загружены с сервера:', serverAdvertisements.length, 'объявлений');
     return serverAdvertisements;
@@ -91,6 +104,18 @@ async function loadServerData() {
     showLoadError('Не удалось загрузить данные с сервера. Используются локальные данные.');
     return advertisements; // Используем локальные данные как fallback
   }
+}
+
+/**
+ * Обновляет метки на карте
+ * @param {Array} advertisements - Массив объявлений для отображения
+ */
+function updateMapPins(advertisements) {
+  // Очищаем существующие метки
+  clearAdvertisementPins();
+
+  // Добавляем новые метки
+  addAdvertisementPins(advertisements);
 }
 
 /**
@@ -112,11 +137,11 @@ async function initApp() {
   // Загружаем данные с сервера
   const advertisementsData = await loadServerData();
 
-  // Добавляем метки объявлений на карту
-  addAdvertisementPins(advertisementsData);
+  // Инициализируем фильтры с callback для обновления меток
+  initFilter(advertisementsData, updateMapPins);
 
-  // Здесь будет код для инициализации фильтров
-  // filterModule.init(advertisementsData);
+  // Добавляем первые метки объявлений на карту (до 10 штук)
+  addAdvertisementPins(advertisementsData.slice(0, 10));
 }
 
 // Запускаем приложение после загрузки DOM

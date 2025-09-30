@@ -32,13 +32,20 @@ async function loadAdvertisements() {
  */
 async function sendFormData(formData) {
   try {
+    console.log('Отправляем запрос на сервер:', SERVER_URL);
+
     const response = await fetch(SERVER_URL, {
       method: 'POST',
-      body: formData
+      body: formData,
+      mode: 'cors'
     });
 
+    console.log('Ответ сервера:', response.status, response.statusText);
+
     if (!response.ok) {
-      throw new Error(`Ошибка отправки данных: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Текст ошибки сервера:', errorText);
+      throw new Error(`Ошибка отправки данных: ${response.status} ${response.statusText}. ${errorText}`);
     }
 
     return response;
@@ -48,4 +55,21 @@ async function sendFormData(formData) {
   }
 }
 
-export { loadAdvertisements, sendFormData };
+/**
+ * Тестирует доступность сервера
+ * @returns {Promise<boolean>} true если сервер доступен
+ */
+async function testServerConnection() {
+  try {
+    const response = await fetch(`${SERVER_URL}/data`, {
+      method: 'GET',
+      mode: 'cors'
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Сервер недоступен:', error);
+    return false;
+  }
+}
+
+export { loadAdvertisements, sendFormData, testServerConnection };

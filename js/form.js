@@ -113,10 +113,23 @@ function syncTimeFields(sourceSelect, targetSelect) {
 }
 
 /**
- * Получает данные формы
- * @returns {Object} объект с данными формы
+ * Получает данные формы в виде FormData для отправки на сервер
+ * @returns {FormData|null} FormData с данными формы
  */
 export function getFormData() {
+  const form = document.querySelector('.ad-form');
+  if (!form) {
+    return null;
+  }
+
+  return new FormData(form);
+}
+
+/**
+ * Получает данные формы в виде объекта (для отладки)
+ * @returns {Object} объект с данными формы
+ */
+export function getFormDataAsObject() {
   const form = document.querySelector('.ad-form');
   if (!form) {
     return null;
